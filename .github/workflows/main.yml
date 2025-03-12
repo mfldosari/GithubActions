@@ -1,0 +1,38 @@
+name: Lint Test Deploy
+
+on: push
+
+jobs:
+  lint:
+    name: Run ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install ESLint and Babel Parser
+        run: npm install @babel/eslint-parser --save-dev
+
+      - name: Ensure ESLint Config Exists
+        run: |
+          if [ ! -f ".eslintrc.json" ]; then
+            echo '{
+              "env": { "browser": true, "es2021": true },
+              "extends": ["eslint:recommended", "plugin:react/recommended"],
+              "parser": "@babel/eslint-parser",
+              "parserOptions": { "ecmaFeatures": { "jsx": true }, "requireConfigFile": false },
+              "plugins": ["react", "react-hooks"],
+              "rules": {}
+            }' > .eslintrc.json
+          fi
+
+      - name: Run ESLint
+        run: npm run lint
