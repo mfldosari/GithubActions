@@ -1,6 +1,9 @@
 name: Lint Test Deploy
 
-on: push
+on: 
+  push:
+    branches:
+      - problem/1  # Replace with your actual branch name
 
 jobs:
   lint:
@@ -9,12 +12,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Debug - List Files
-        run: ls -R
-
-      - name: Debug - Check package.json
-        run: cat package.json || echo "package.json not found!"
+        with:
+          ref: problem/1  # Ensure we check out the correct branch
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -25,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Run ESLint
-        run: npm run lint || echo "Linting failed"
+        run: npm run lint
 
   test:
     name: Run Tests with Vitest
@@ -34,17 +33,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          ref: problem/1
 
       - name: Install Dependencies
         run: npm install
 
       - name: Run Tests
-        run: npm run test || echo "Tests failed"
+        run: npm run test
 
   deploy:
     name: Deploy Application
@@ -53,6 +49,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          ref: problem/1
 
       - name: Deploy
         run: echo "Deploying..."
